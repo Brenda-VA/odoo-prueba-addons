@@ -1,0 +1,33 @@
+<!-- addons/modulo_prueba/security/task_security.xml -->
+<odoo>
+    <!-- en id se puede poner lo q querramos con tal de que tenga un nombre claro -->
+    <record id='user_task_own_rule' model='ir.rule'> <!-- crea una regla de registro en el modelo 'ir.rule', el cual es de odoo y sirve para crear reglas de acceso por registro -->
+        <field name='name'>Ver solo mis tareas</field> <!-- nombre visible de la regla -->
+
+        <!-- indica q la regla aplica al modelo modulo_prueba.task-->
+        <field name='model_id' ref='model_modulo_prueba_task'/> <!-- la ref='' tiene que ser _name = "modulo_prueba.task" pero añadiendo antes 'model_', quedaria 'model_modulo_prueba_task' o tmb lo q pusimos en el campo 'model_id:id' ir.model.acces.csv-->
+        
+        <!-- como tal esta es la regla 
+         'user_id' es el campo Many2one
+          'user.id' es el ID del usuario conectado                              -->                                      
+        <field name='domain_force'>[('user_id', '=', user.id)]</field><!-- campo q le dice a Odoo q muestre sólo las tareas donde el user_id sea igual al usuario actual, osea el q está actualmente logeado -->
+        
+        <!-- inndica a que grupo de usuarios debe aplicarse la regla :
+         'groups' es un campo Many2many del modelo 'ir.rule' de odoo, es decir, una regla puede aplicarse a varios grupos y un grupo puede tener muchas reglas 
+         eval="...": indica q Odoo debe interpretar su contenido como una expresión python y no como texto plano
+         '4' -> comando ORM de Odoo para relaciones Many2many y One2many (https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html):
+                        
+                                            EJEMPLO
+                        CREATE= 0
+                        UPDATE= 1 -> (1, {id}, { values }) -> Actualiza el id del registro {id} con el valor que le pongamos en values
+                        DELETE= 2 ->        (2, {id})      -> Elimina el registro vinculado al {id}
+                        UNLINK= 3 ->        (3, {id})      -> Corta el vínculo, osea elimina la relación entre los 2 objetos pero no elimina el objeto de destino 
+                        LINK= 4   ->        (4, {id})      -> Vincula un registro existente con el {id}, crea una relación, por ejmp abajo añade el grupo base.group_user al campo groups de esta regla
+                        CLEAR= 5  ->            (5)        -> Eliminar todas las relaciones 
+                        SET= 6    ->      (6, 0, {ids})    -> Reemplazar todas las relacionas por la lista de id's q le proporcionemos 
+
+         'ref()' busca un registro por su XML ID y devuelve su ID real en la base de datos    
+         'base.group_user' es un grupo interno de Odoo q representa a los usuarios internos, no a visitantes publicos -->
+        <field name='groups' eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

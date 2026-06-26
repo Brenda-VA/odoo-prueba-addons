@@ -1,0 +1,54 @@
+<!-- addons/modulo_prueba/views/student_views.xml
+Las vistas se definen mediante XML y se usan para generar vistas HTML con datos
+En los XML se definen acciones y menús con instancias de ir.ui.view
+Toda vista en Oodoo debe estar referenciada en el manifest de la sección data, si no, Odoo NO LA TOMARÁ EN CUENTA
+
+Un mismo modelo puede tener más de una vista, estos son algunos de los tipos de vistas que hay:
+  - Vistas de tipo LISTA (registros con columnas y widgets a elegir, como la lista de ubicaciones)
+  - Vistas de tipo FORMULARIO (información tipo etiqueta-valor, widgets, pestañas, como la parte de añadir inventario básicamente)
+  - Vistas de tipo PIVOTE (son como tablas, se pueden hacer cruces de columnnas y filas para sacar calculos  )
+  - Vistas de tipo KANBAN (tarjetas, como la parte de productos dentro de inventario)
+  - Vistas de tipo BÚSQUEDA (filtros como la parte de búsqueda q siempre hay arriba)                                         -->
+<odoo>
+    <data>
+        <!-- usamos record para definir una interfaz, con varios records podemos hacer una de lista, otra de formulario, etc -->
+      <record id="student_list_view" model="ir.ui.view"> <!-- 'ir.ui.view' es el modelo interno de odoo donde guarda las vistas -->
+        <field name="name">student.list.view</field><!-- este campo indica el nombre de la interfaz -->
+        <field name="model">modulo_prueba.student</field><!-- modelo en el q va a estar basado, nos vamos a models y ponemos el nombre del modelo correspondiente -->
+        <!-- AQUÍ YA VA EL CONTENIDO DE LA VISTA -->
+        <field name="arch" type="xml">
+          <list>
+            <field name="name"/><!-- estas con las columnas de la tabla, los textos como 'brenda', 'pepe', etc salen del models.py -->
+            <field name="age"/>
+          </list>
+        </field>
+      </record>
+
+      <!-- este record crea la vista de creación/edición donde escribo los nombres y edades, es de tipo FORMULARIO -->
+      <record id="student_form_view" model="ir.ui.view">
+        <field name="name">student.tree.view</field><!-- este campo indica el nombre de la interfaz -->
+        <field name="model">modulo_prueba.student</field><!-- basado en el mismo modelo de la anterior interfaz, solo sirve para traer informacion, no muestra nada -->
+        <!-- AQUÍ YA VA EL CONTENIDO DE LA VISTA, donde realmente se muestran los datos -->
+        <field name="arch" type="xml">
+          <form>
+            <group>
+              <field name="name"/>
+            </group>
+            <group>
+              <field name="age"/>
+            </group>
+          </form>
+        </field>
+      </record>
+
+      <!-- ACCIÓN -->
+      <!-- esto abre la ventana de Students, el elemento q vamos a colocar dentro está en menuitem -->
+      <record id="student_action" model="ir.actions.act_window"><!-- id es solo el nombre, 'ir.actions.act_window': indica q no estoy creando una vista si no una accion de ventana
+        'ir.actions.act_window': Genera automaticamente el botón New, la barra de búsqueda, el engranaje, paginación, checkboxes y menú de acciones  -->
+        <field name="name">Students</field> <!-- nombre que sale en la página seleccionada como tal, no en la barra de navegación -->
+        <field name="res_model">modulo_prueba.student</field>
+        <field name="view_mode">list,form</field> <!-- q tipo de modelo va a contener, en este caso una lista y un formulario y el orden indica q primero abre la lista y luego el formulario -->
+      </record>
+      
+    </data>
+</odoo>

@@ -1,0 +1,330 @@
+<!-- addons/modulo_prueba/views/task_views.xml -->
+<odoo>
+    <!-- vista de tipo FORMULARIO -->
+    <record id='view_user_task_form' model='ir.ui.view'>
+        <field name='name'>modulo_prueba.task.form</field>
+        <field name='model'>modulo_prueba.task</field>
+        <field name='arch' type='xml'>
+            <form string='Tarea'>
+                <sheet> <!-- '<sheet>' es un contenedor visual (componente) propio de Odoo, le da el aspecto de estar en una cajita  -->
+                    <group>
+                       <field name='name'/>
+                       <field name='description'/>
+
+                       <field name='creation_date'/><!-- recordar q en field se coloca el nombre del campo declarado en el modelo python -->
+                       <field name='start_date'/>
+                       <field name='end_date'/>
+                       <field name='is_paused'/>
+                       <!-- aunque no haya creado vistas personalizadas para los modelos Sprint ni Tecnologías, como les creé las ACCIONES y 
+                        las enlazé a un MENU, Odoo puede generar vistas automáticas básicas para modelos nuevos sin necesidad de yo hacer ningun XML 
+                        
+                        ================== CAMPOS RELACIONALES =================
+- Cuando creas una tarea y eliges un sprint:    Formulario de Tarea
+                                                        |
+                                                Campo sprint_id
+                                                        |
+                                                Guarda el ID del sprint en modulo_prueba_task.sprint_id
+                                                       |
+                                                Cuando abres el Sprint
+                                                        |
+                                                Odoo busca todas las tareas con ese sprint_id
+                                                        |
+                                                Las muestra en task_ids
+
+Cuando seleccionas tecnologías en una tarea:    Formulario de Tarea
+                                                        |
+                                                Campo tecnologias_ids
+                                                        |
+                                                Odoo escribe filas en modulo_prueba_task_tecnologia_rel
+                                                        |
+                                                Cuando abres una Tecnología
+                                                        |
+                                                Odoo busca en esa tabla intermedia
+                                                        |
+                                                Muestra las tareas relacionadas en task_ids                                             
+                        
+                        -->
+                       <field name='sprint_id'/> <!-- MUESTRA Many2one, en la interfaz se ve como un desplegable con lista de Sprints con buscador -->
+                       <field name='tecnologias_ids' widget='many2many_tags'/>  <!-- MUESTRA Many2many, se ven como etiquetas a seleccionar, con 'widget='many2many_tags' se ve con loschecks de selección
+                       sin ek widget se veria como una tabla/lista simple -->
+                    </group>
+
+                    <group>
+                        <field name='priority'/>
+                       <field name='state'/>
+                       <field name='deadline'/>
+                       <field name='user_id' readonly='1'/> <!-- 'readonly' es un atributo de Odoo XML Views, tmb se puede activar con True -->
+                       <field name='is_done' readonly='1'/> 
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+ <!-- vista de tipo LISTA -->         
+    <record id='view_user_task_list' model='ir.ui.view'>
+<!-- la convención para poner nombres a los campos es: modulo_prueba = módulo
+                                                       task = modelo
+                                                       form/list = tipo de vista                         -->
+        <field name='name'>modulo_prueba.task.list</field> 
+        <field name='model'>modulo_prueba.task</field> <!-- 'con model:...' se conecta la vista XML con el modelo .py  -->
+        <field name='arch' type='xml'> <!-- 'arch' es el tipo de arquitectura que tiene, en este caso es XML -->
+            <list string='Tareas'> 
+                <field name='name'/> 
+                <field name='priority'/> 
+                <field name='state'/> 
+                <field name='deadline'/> 
+                <field name='is_done' readonly='1'/>      
+            </list> 
+        </field> 
+    </record> 
+
+<!-- vista de tipo KANBAN -->
+<!-- la convención para poner nombres a los campos es: modulo_prueba = módulo
+                                                       task = modelo
+                                                       form/list = tipo de vista                         -->
+    <record id='view_user_task_kanban' model='ir.ui.view'>
+        <field name='name'>modulo_prueba.task.kanban</field> 
+        <field name='model'>modulo_prueba.task</field> <!-- 'con model:...' se conecta la vista XML y usa _name = "modulo_prueba.task" de task.py  -->
+        <field name='arch' type='xml'> <!-- 'arch' es el tipo de arquitectura que tiene, en este caso es XML -->
+
+            <!-- kanban es un elemento de Odoo 
+             default_group_by='': Agrupa las tarjetas según el campo q le pongamos, puede ser 'state', 'priority', etc
+             'o_kanban_small_column': clase CSS propia de Odoo hecha para columnas más pequeñas
+             -->
+            <kanban default_group_by='state' class='o_kanban_small_column'>    
+                <!-- campos q vienen del modelo, deben ser declarados primero para luego ser usados en el template para q él pueda jalar infromación del modelo -->
+                <field name='name'/> 
+                <field name='description'/> 
+                <field name='priority'/> 
+                <field name='state'/> 
+                <field name='deadline'/> 
+                <field name='user_id'/> 
+                <field name='is_done'/>  
+
+                <!-- QWEB 
+                etiqueta <templates> para usar QWeb, el motor de plantillas de Odoo basado en XML + HTML
+                Odoo las renderiza en HTML por lo q se usan para generar fragmentos o páginas HTML escribiendolas en las vistas XML
+                estas plantillas ayudan a hacerle saber a Odoo como debe dibujar cada tarjeta de la vista kanban  
+                
+                CLASES CSS DE ODOO: La mayoría empieza con los prefijos: - o_ (nuevo)
+                                                                         - oe_ (de versiones muy viejas)
+                
+                Odoo tiene Font Awesome totalmente integrado de forma nativa en su núcleo.                -->
+                <templates>
+
+
+<!--  /////////////////  DIRECTIVAS  QWEB /////////////////
+SON LOS ATRIBUTOS Q USA EL MOTOR DE PLANTILLAS DE ODOO QWEB PARA AÑADIR LÓGICA DE PROGRAMACIÓN DENTRO DE ARCHIVOS HTML O XML
+
+<t>: etiqueta de QWeb, sólo sirve para contener las órdenes (t-if, t-call, etc) y enviárselas a Odoo pa q las muestre en el navegador,
+    pero al enviarse al navegador, esta etiqueta desaparece para no añadir contenedores inncesarios y romper los diseños CSS
+
+==> DIRECTIVAS DE PLANTILLA (TEMPLATES): 
+    - t-name="card": Define el identificador único de la plantilla. En las vistas Kanban 
+                     de Odoo 19, es obligatorio llamarla 'card' para que el motor visual 
+                     del núcleo del ERP la detecte y dibuje el chasis de la tarjeta.
+    
+    - t-call="modulo.nombre": Llama, lee e inyecta otra plantilla XML secundaria en ese 
+                             punto exacto. Sirve para reutilizar código y no repetir HTML.
+
+
+==> DIRECTIVAS DE VARIABLES Y ASIGNACIÓN:
+    - t-set="mi_variable": Declara o inicializa una variable en memoria para usarla después.
+    
+    - t-value="2 + 2": Define el valor o la operación lógica que se guardará dentro de la 
+                       variable creada por 't-set'. Puede evaluar código Python/JS.
+
+
+==> DIRECTIVAS DE IMPRESIÓN DE DATOS (OUTPUT):
+    - t-esc="variable": Imprime texto plano de forma segura. (DEPRECADO/OBSOLETO: El motor 
+                        de Odoo 19 lo traduce internamente a 't-out' por compatibilidad).
+
+    - t-raw="variable": Inyectaba código HTML vivo en crudo sin filtros. (ELIMINADO/PROHIBIDO: 
+                        No existe en Odoo 19 por motivos graves de seguridad web).
+    
+    - t-out="record.name.raw_value": El estándar moderno de Odoo 19 para imprimir datos. Es 
+                                    inteligente: actúa como 't-esc' (escudo de texto plano) 
+                                    por defecto, y actúa como 't-raw' solo si el campo origen 
+                                    en Python se declaró como fields.Html.
+    
+    - t-field="record.deadline": La directiva más potente de Odoo para pintar campos. No recibe 
+                                valores de texto (.value), sino el objeto campo directo. Aplica 
+                                automáticamente formatos de monedas, idiomas, fechas de cada país 
+                                y soporta el uso de widgets (ej. widget="image").
+
+
+==> DIRECTIVAS CONDICIONALES (CONTROL DE FLUJO):
+    - t-if="condicion": Evalúa una condición lógica. Si es verdadera, renderiza el bloque HTML; 
+                        si es falsa, destruye el bloque y no lo manda al navegador.
+    
+    - t-elif="condicion": Equivalente a "else if". Evalúa una segunda condición alternativa si 
+                          el 't-if' superior resultó falso.
+    
+    - t-else="": Equivalente a "else". Se ejecuta de forma obligatoria automática si todas las 
+                 condiciones previas ('t-if' y 't-elif') resultaron falsas. No lleva parámetros.
+
+
+==> DIRECTIVAS DE BUCLES (REPETICIONES):
+    - t-foreach="[1, 2, 3, 4]": Inicia un bucle iterativo para repetir código. Puede recibir listas, 
+                                diccionarios o el listado de registros de la base de datos.
+    
+    - t-as="mi_item": Define el nombre de la variable temporal que tomará el valor del elemento 
+                      actual del bucle 't-foreach' en cada vuelta.
+
+
+==> DIRECTIVAS DE ATRIBUTOS DINÁMICOS (SINTAXIS t-att):
+    - t-att-a="'12'": Genera un único atributo HTML dinámico llamado 'a' con el valor '12' 
+                      (Resultado final en el navegador: a="12").
+    
+    - t-att-class="{'clase_a': condicion_1, 'clase_b': condicion_2}": 
+                      Formato de mapeo (diccionario). Añade las clases CSS de forma inteligente 
+                      únicamente si sus condiciones asociadas se evalúan como verdaderas.
+    
+    - t-att="{'a': 1, 'b': 2}": Formato de diccionario completo. Permite inyectar múltiples 
+                                atributos diferentes y sus valores de golpe en una sola etiqueta 
+                                (Resultado final en el navegador: a="1" b="2").
+
+==> DIRECTIVAS AVANZADAS / OBSOLETAS:
+    - t-js="ctx": Comando antiguo de QWeb clásico usado para inyectar bloques de código 
+                  JavaScript directamente en la generación de la plantilla. (OBSOLETO: En Odoo 19 
+                  toda la lógica JS se maneja a través de componentes estructurados de OWL). -->
+
+                    <t t-name='card'> 
+                    <!-- t-if: Condicional de QWeb:  - record.priority: Comprueba que el campo priority existe en el registro y que Odoo ha cargado sus datos en la vista Kanban
+                                                     - record.priority.raw_value: Comprueba que el campo no está vacío (es decir, que tiene un valor técnico real en la base de datos como 0, 1 o 2).
+
+                        'record.': Sirve para llamar al contenido de los campos y normalmente expone 2 propiedades:    
+                                            - .raw_value: Valor tal y como está guardado en Postgre
+                                            - .value: Muestra el contenido de forma legible, como lo asignemos en el código o en la Interfaz de Odoo, como alta, baja y media
+                        
+                        En este caso está sacando información del campo 'priority' (ver línea 14 de 'task.py)'
+                                            record.priority.raw_value -> valor técnico: 0, 1, 2
+                                            record.priority.value     -> valor visible: Baja, Media, Alta                                       -->
+                        <t t-if='record.priority and record.priority.raw_value'>
+                            
+                            <!-- t-att-class='': Calcula dinámicamente el atributo de clase, en este caso lo genera conncatenando las clases CSS + el valor de priority  
+                             oe_kanban_card: clase nativa CSS de odoo para q le aplique al <div> los estilos básicos de una tarjeta de odoo
+                             user_task_kanban: línea 3 de 'task_kanban.css', sirve de ancla para aplicar estilos personalizados a tarjetas
+                             oe_kanban_global_click: clase CSS de Odoo, hace q toda la tarjeta sea cliqueable
+                             priority_: texto cortado de 'priority_0', 'priority_1', etc de 'task_kanban.css' para concatenar con 'record.priority.raw_value'
+                             record.priority.raw_value: extrae el valor técnico del campo 'priority' y lo concatena con el texto anterior para generar la clase exacta (priority_0, priority_1, priority_2) -->
+                            <div t-att-class="'oe_kanban_card user_task_kanban oe_kanban_global_click priority_' + record.priority.raw_value ">
+
+                                <!-- t-call: llama a la plantilla reutilizable declarada en la línea 192 (t-name='modulo_prueba.kanban_content'). Es posible llamar a una planntilla declarada después pq Python no lee el XML como si fuera un programa, lo hace QWeb que primero lee todos los templates, las guarda en la bbdd, y desde el navegador el servidor busca y lee los XML previamente guardados donde, resuelve los t-call y los muestra en forma de html -->
+                                <t t-call="modulo_prueba.kanban_content"/>
+                            </div>
+                        </t>
+
+                        <!-- 2do t-if: Igual q el primer t-if pero negado. Si no encuentra una prioridad asignada, entonces le asigna la prioridad 0 (baja) -->
+                        <t t-if='!(record.priority and record.priority.raw_value)'>
+                            <div t-att-class="'oe_kanban_card user_task_kanban oe_kanban_global_click priority_0'">
+                                <t t-call="modulo_prueba.kanban_content"/>
+                            </div>
+                        </t>
+                    </t>
+
+
+
+
+                    <!-- crear plantilla reutilizable
+                     t-name: Nombre de la plantilla
+                     convención del nombre: nombre_modulo.nombre_plantilla -->
+                    <t t-name='modulo_prueba.kanban_content'>
+
+                        <!-- o_kanban_details: clase CSS nativa de Odoo, le da un estilo tipico de odoo al texto del contenedor  -->
+                        <div class="o_kanban_details">
+                            <div>
+                                <strong>
+                                    <field name='name'/> <!-- campo q muestra el título de la tarea en negrita -->
+                                </strong>
+                            </div>
+                            <div>
+                                <field name='description'/>
+                            </div>
+                            <div>
+                                <!-- <i>: Etiqueta de la libreria Font Awesome para poder pintar un icono
+                                 fa: Acronimo de FontAwesome, inicializa el motor de fuentes de navegador
+                                 fa-calendar: nombre del ícono, con solo escribirlo se pinta -->
+                                <i class='fa fa-calendar'/> 
+                                <field name='deadline'/>
+                            </div>
+                            <div>
+                                <i class='fa fa-flag'/>
+                                <field name='priority'/>
+                            </div>
+                        </div>
+
+                        <!-- oe_kanban_footer: clase CSS de Odoo para pie de las tarjetas
+                          d-flex justify-content-between align-items-center: Son clases de Bootstrap
+                            - d-flex: activa una caja flexible 
+                            - justify-content-between: empuja el usuario a la extrema izquierda y la etiqueta de estado a la extrema derecha 
+                            - align-items-center: los alinea verticalmente para que queden centrados -->
+                        <div class='oe_kanban_footer d-flex justify-content-between align-items-center'>
+                            <span>
+                                <i class='fa fa-user'/>
+                                <field name='user_id'/>
+                            </span>
+                            <t t-if='record.priority and record.priority.raw_value'> 
+
+                           <!-- t-attf-class: Genera atributos dinámicos cambiado la parte dentro de #{...} según el valor q corresponda
+                                por lo q en 'state-#{record.state.raw_value}' podemos recibir valores como: - state-draft
+                                                                                                            - state-in_progress
+                                                                                                            - state-done  
+                                De esta forma puede formar las clases declaradas en 'task_kanban. css' a partir de la línea 65
+
+                                badge: clase CSS de Bootstrap
+
+                                task-state-badge: clase CSS declarada en la líne 56 de 'task_kanban. css'-->
+                                <span t-attf-class="badge task-state-badge state-#{record.state.raw_value}">
+
+                                    <!-- t-esc: Sirve para escribir variables de texto limpio en las plantillas QWeb, que son HTML, si se pusiera el texto directamente Odoo no sabria q hacer con él
+                                     pero con t-esc ya sabe q debe de tomar el valor de la variable y pegarlo en el HTML. 
+                                     En este caso muestra el .value:  - Borrador
+                                                                      - En Progreso
+                                                                      - Completada                  --> 
+                                    <t t-out='record.state.value' />
+                                </span>
+                            </t>
+                        </div>
+                        <t t-if='record.is_done and record.is_done.raw_value'>
+                            <i class='fa fa-check-circle task-done' title='Tarea Completada'/> <!-- coloca el ícono con el check de 'Completado' usando Font Awesome -->
+                        </t>
+                    </t>
+                </templates>
+            </kanban> 
+        </field> 
+    </record> 
+
+
+    <!-- Acción
+    Es como el enlace entre el menú y el contenido del modelo, cada acción me abre el contenido de una página despues de seleccionar un determinado campo en la navbar --> 
+      <record id='action_user_task' model='ir.actions.act_window'> 
+        <field name='name'>Mis tareas</field> <!-- nombre q le queramos poner a la acción -->
+        <field name='res_model'>modulo_prueba.task</field> <!-- nombre del modelo sobre el que se aplique la acción -->
+        <field name='view_mode'>kanban,list,form</field> <!-- vistas disponibles, agragando kanban la acción tmb va a poder acceder al kanban -->
+        <field name='help' type='html'>
+            <p>Desde aquí puedes gestionar tus tareas personales</p> <!-- Texto que aparece cuando la vista no tiene datos/está vacía -->
+        </field>
+      </record>
+
+      <record id='action_user_sprint' model='ir.actions.act_window'> 
+        <field name='name'>Mis Sprints</field> <!-- nombre q le queramos poner a la acción -->
+        <field name='res_model'>modulo_prueba.sprint</field> <!-- nombre del modelo sobre el que se aplique la acción -->
+        <field name='view_mode'>list,form</field> <!-- vistas disponibles, agragando kanban la acción tmb va a poder acceder al kanban -->
+        <field name='help' type='html'>
+            <p>Desde aquí puedes gestionar tus Sprints creados</p><!-- Texto que aparece cuando la vista no tiene datos/está vacía -->
+        </field>
+      </record>
+
+       <record id='action_user_tecnologia' model='ir.actions.act_window'> 
+        <field name='name'>Mis tecnologías</field> <!-- nombre q le queramos poner a la acción -->
+        <field name='res_model'>modulo_prueba.tecnologia</field> <!-- nombre del modelo sobre el que se aplique la acción -->
+        <field name='view_mode'>list,form</field> <!-- vistas disponibles, agragando kanban la acción tmb va a poder acceder al kanban -->
+        <field name='help' type='html'>
+            <p>Desde aquí puedes gestionar tus tecnologías</p><!-- Texto que aparece cuando la vista no tiene datos/está vacía -->
+        </field>
+      </record>
+    <!-- La acción se usa en los menús declarados en 'menus.xml' -->
+
+</odoo>

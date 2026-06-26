@@ -1,0 +1,17 @@
+# Excluir el entorno virtual de Python
+venv/
+.venv/
+env/
+
+# Excluir la caché de ejecución de Python
+**/__pycache__/
+*.pyc
+
+# Excluir archivos de configuración con contraseñas locales
+config/
+odoo.conf
+
+# Excluir carpetas ocultas del editor de código
+.vscode/
+.idea/
+.DS_Store

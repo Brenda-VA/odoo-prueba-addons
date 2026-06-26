@@ -1,0 +1,27 @@
+<odoo>
+  <data>
+     <!-- MENÚ -->
+      <menuitem id="menu_root" name="Escuela"/> <!-- crea la app/pestaña principal School, la q se ve en el lanzador lateral junto a Apps, Settings, etc -->
+
+      <!-- Elemento que se ve en la barra superior al entrar al módulo (STUDENTS - MIS TAREAS)
+       sequence 10 para q se muestre 1ero  -->
+      <menuitem id="menu_students" name="Estudiantes" parent="menu_root" sequence='10'/> <!-- con eso se ponen sub pestañas, el padre va a ser el id del anterior menú para indicar q está dentro -->
+      <!-- Pestañita q aparece cuando clicas sobre una subpestaña, su padre debe ser el id de la subpestaña anterior -->
+      <menuitem id="menu_students_list" name="Lista de estudiantes" parent="menu_students" 
+      action="student_action"/> <!-- el action va a permitir abrir las pestañas y ver el contenido 
+      School
+            |- Students
+                |- Students list                -->
+
+      <!-- su padre es 'menu_root' (línea 4) pq debe de aparecer en la barra superior junto con Students 
+      SEQUENCE='': Indica el orden visual en el que aparecen los elementos, si hay una con sequence 10 y otra 20, aparece primero la q tiene 10
+      Los números usados deben ser de 10 en 10 (10,20,30,...) pq si luego se quiere agregar una subpestaña sorpresa podemos poner 14 o 15 sin romper el orden total-->
+     <menuitem id='menu_user_task' name='Mis Tareas' parent='menu_root' sequence="20"></menuitem>
+     <menuitem id="menu_task_list" name="Tareas" parent="menu_user_task" action="action_user_task"/>
+     <menuitem id="menu_sprint_list" name="Sprints" parent="menu_user_task" action="action_user_sprint"/>
+     <menuitem id="menu_tecnologias_list" name="Tecnologías" parent="menu_user_task" action="action_user_tecnologia"/>
+     <!-- School.                     
+            |- Students            |- Mis tareas   
+                |- Students list                                                -->
+  </data>
+</odoo>
