@@ -2,9 +2,15 @@
 from odoo import fields, models, Command
 
 ''' Herencia de modelo por extensión:
-       * _inherit = 'account.move' significa que NO creo un modelo nuevo.
-       * Estoy ampliando el modelo existente de Odoo account.move, que se usa para facturas/asientos.
-       * Todo lo que añada aquí, como campos o métodos, pasa a estar disponible en account.move              '''
+       * _inherit = 'account.move' significa que NO creo un modelo nuevo (tabla en postgres), solo q modifico, añado o cambio funciones de este modelo
+       * Estoy ampliando el modelo existente de Odoo account.move,en este caso, el que se usa para facturas/asientos
+       * Todo lo que añada aquí, como campos o métodos, pasa a estar disponible en account.move              
+
+    Herencia por delegación o polimorfismo:
+       * _inherits = Crea un modelo nuevo (tabla en postgres) pero hereda la estructura de otro ya existente y las vincula de forma invisible con un Many2one
+       * EJM:   Usuario en Odoo q tiene campos como contraseña o permisos, pero delega (_inherits) en el modelo de contactos (res.partner) 
+                para tener nombre, teléfono y dirección sin tener que duplicar esos campos en la base de datos
+       * Sirve si vas a crear un modelo que va a ser como un subtipo o categoría especial de otro                                                                                               '''
 class AccountMove(models.Model):
     _inherit= 'account.move' #Herencia por Extensión de account, no se crea una nueva tabla, sólo se modifican y se añaden campos/funciones a la tabla facturas q ya existe
 
