@@ -15,8 +15,8 @@ class Tecnologia(models.Model):
     task_ids = fields.Many2many(
         comodel_name='modulo_prueba.task',  
         relation='modulo_prueba_task_modulo_prueba_tecnologia_rel', #usa la misma tabla intermedia q el many2many de task.py
-        column1='tecnologia_id', #invierte el orden de las columnas, ahora se apunta primero a tecnologia_id
-        column2='task_id', #y luego a task_id
+        column1='modulo_prueba_tecnologia_id', #invierte el orden de las columnas, ahora se apunta primero a tecnologia_id
+        column2='modulo_prueba_task_id', #y luego a task_id
         string='Tareas'
         #T.ODO ESTO PERMITE QUE UNA TECNOLOGIA PUEDA VER SUS TAREAS RELACIONADAS
     )
