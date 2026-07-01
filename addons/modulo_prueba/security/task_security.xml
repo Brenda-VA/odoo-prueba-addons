@@ -12,19 +12,19 @@
           'user.id' es el ID del usuario conectado                              -->                                      
         <field name='domain_force'>[('user_id', '=', user.id)]</field><!-- campo q le dice a Odoo q muestre sólo las tareas donde el user_id sea igual al usuario actual, osea el q está actualmente logeado -->
         
-        <!-- inndica a que grupo de usuarios debe aplicarse la regla :
+        <!-- inndica a que grupo de usuarios debe aplicarse la regla:
          'groups' es un campo Many2many del modelo 'ir.rule' de odoo, es decir, una regla puede aplicarse a varios grupos y un grupo puede tener muchas reglas 
          eval="...": indica q Odoo debe interpretar su contenido como una expresión python y no como texto plano
          '4' -> comando ORM de Odoo para relaciones Many2many y One2many (https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html):
                         
                                             EJEMPLO
-                        CREATE= 0
-                        UPDATE= 1 -> (1, {id}, { values }) -> Actualiza el id del registro {id} con el valor que le pongamos en values
-                        DELETE= 2 ->        (2, {id})      -> Elimina el registro vinculado al {id}
-                        UNLINK= 3 ->        (3, {id})      -> Corta el vínculo, osea elimina la relación entre los 2 objetos pero no elimina el objeto de destino 
-                        LINK= 4   ->        (4, {id})      -> Vincula un registro existente con el {id}, crea una relación, por ejmp abajo añade el grupo base.group_user al campo groups de esta regla
-                        CLEAR= 5  ->            (5)        -> Eliminar todas las relaciones 
-                        SET= 6    ->      (6, 0, {ids})    -> Reemplazar todas las relacionas por la lista de id's q le proporcionemos 
+                        CREATE= 0 -> [(0, 0, { values })]    -> 
+                        UPDATE= 1 -> [(1, {id}, { values })] -> Actualiza el id del registro {id} con el valor que le pongamos en values
+                        DELETE= 2 ->        [(2, {id})]      -> Elimina el registro vinculado al {id}
+                        UNLINK= 3 ->        [(3, {id})]      -> Corta el vínculo, osea elimina la relación entre los 2 objetos pero no elimina el objeto de destino 
+                        LINK= 4   ->        [(4, {id})]      -> Vincula un registro existente con el {id}, crea una relación, por ejmp abajo añade el grupo base.group_user al campo groups de esta regla
+                        CLEAR= 5  ->            (5)]         -> Eliminar todas las relaciones 
+                        SET= 6    ->      [(6, 0, {ids})]    -> Reemplazar todas las relacionas por la lista de id's q le proporcionemos 
 
          'ref()' busca un registro por su XML ID y devuelve su ID real en la base de datos    
          'base.group_user' es un grupo interno de Odoo q representa a los usuarios internos, no a visitantes publicos -->

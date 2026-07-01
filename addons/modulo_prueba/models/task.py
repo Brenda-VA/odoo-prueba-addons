@@ -108,11 +108,10 @@ Many2many: - Muchos <--> Muchos (N:N)
     tecnologias_ids = fields.Many2many(
         comodel_name='modulo_prueba.tecnologia', #modelo destino con el q se va a enlazar
         relation='modulo_prueba_task_modulo_prueba_tecnologia_rel', #nombre de la tabla intermedia q se va a crear, la convención para el nombre es 'nombreModulo_
-        column1='task_id', #columna que apunta a la tarea
-        column2='tecnologia_id', #columna q apunta a tecnologia
+        column1='modulo_prueba_task_id', #columna que apunta a la tarea
+        column2='modulo_prueba_tecnologia_id', #columna q apunta a tecnologia
         string='Tecnologías' #texto visible
     )
-
 
     priority = fields.Selection( #crea un desplegable de seleccion donde Odoo guarda 1 pero el usuario ve 'Media', etc
         [('0','Baja'),('1','Media'),('2','Alta')],
@@ -128,17 +127,61 @@ Many2many: - Muchos <--> Muchos (N:N)
     deadline = fields.Date(string='Fecha Límite') #campo tipo fecha 
     is_done = fields.Boolean(string='Completada', compute= '_compute_is_done', store=True) #campo booleano calculado donde compute= '_compute_is_done' dice q el valor se calcula con el '_compute_is_done', store=True hace q el valor se guarde en postgre
 
-    ''' api : Módulo de odoo, importado arriba y tiene varios decoradores como @api y son usados para desarrollar módulos:
-                    - @api.depends(): Recalcula campos COMPUTE que dependan de otros en cuanto se produzca un cambio en el estado de dicho campo
-                    - @api.constrains(): Valida datos, básicamente pone restricciones, si se cumple la validación definida te deja ejecutar el código, si no, te muestra un ValidationError
-                    - @api.onchange(): Cuando el usuario modifica un campo en el formulario, este actualiza la vista de la interfaz pero sin guardar los cambios
-                    - @api.model(): Indica que un método trabaja con el modelo, no con registros concretos, usado con create(), búsquedas y utilidades
-                    - @api.model_create_multi(): 
-                    - @api.autovacuum(): 
-                    - @api.private()
+    ''' api : Módulo de odoo, importado arriba y tiene varios decoradores como @api, etc. Se usan para definir el comportamiento a los métodos, controlar el flujo de datos o gestionar la BBDD:
+            - @api.depends('campo_a', 'campo_b'): 
+                    Obligatorio para campos calculados (compute). 
+                    Escucha los cambios en los campos indicados como argumentos y recalcula el valor del campo compute en tiempo real tanto en la interfaz como al guardar en la base de datos.
 
+            - @api.depends_context('clave_contexto_a', 'clave_contexto_b'):
+                Se usa en campos calculados que NO solo dependen de campos del registro, sino también del contexto de ejecución de Odoo.
+                El "context" es información extra que Odoo pasa internamente, como la compañía activa, el idioma, el usuario, la fecha, permisos, etc.
+                Si cambia alguno de los valores del contexto indicados, Odoo sabe que debe recalcular el campo compute.
+                * Ejemplo:
+                    @api.depends_context('company')   ->      En ese caso, el cálculo puede variar según la compañía activa.
+                    def _compute_price(self):                 No se usa para campos normales del modelo, sino para valores del contexto. 
+                        ...
 
-    '''
+            - @api.ondelete(at_uninstall=False): Se usa para definir validaciones o bloqueos cuando se intenta eliminar un registro con unlink()
+                    Sirve para evitar que los registros sean borrados si no cumplen una condición
+                    A diferencia de sobreescribir directamente unlink(), api.ondelete está pensado para que las validaciones de borrado no bloqueen la desinstalación del módulo.
+                    Por defecto es 'at_uninstall=False', osea la validación NO se ejecuta cuando Odoo está desinstalando el módulo
+                    * Ejemplo:
+                                @api.ondelete(at_uninstall=False).      -> Aquí Odoo impediría borrar tareas que no estén completadas, 
+                                def _unlink_if_not_done(self):             pero permitiría limpiar datos durante la desinstalación del módulo
+                                    for record in self:
+                                        if record.state != 'done':
+                                            raise UserError("Solo puedes borrar tareas completadas.")
+
+            - @api.constrains('campo_a'): 
+                    Establece restricciones de validación a nivel de servidor del backend. 
+                    Si los datos ingresados por el usuario violan la lógica programada, interrumpe la ejecución del código y lanza un aviso en pantalla mediante 
+                    un "ValidationError", haciendo q no se guarden datos incorrectos.
+
+            - @api.onchange('campo_a'): 
+                    Dispara código puramente del lado del cliente (Frontend). 
+                    Cuando el usuario modifica el valor de un campo dentro de un formulario, actualiza de forma visual otros campos de la pantalla al instante, 
+                    pero SIN guardar los cambios en la base de datos hasta que el usuario pulse el botón manual de guardar.
+
+            - @api.model: 
+                    Indica que el método actúa a nivel de la clase/modelo general y no sobre un registro (record) con un ID específico. 
+                    Es el equivalente a un método estático (classmethod). 
+                    Se usa habitualmente en métodos de utilidad genéricos y en búsquedas personalizadas.
+
+            - @api.model_create_multi: 
+                    El estándar moderno y obligatorio en Odoo 19 para la creación de registros. 
+                    Fuerza a que el método "create()" reciba una lista de diccionarios (vals_list), lo q permite al ORM realizar 
+                    inserciones de datos masivas (Bulk Inserts) en una única transacción de PostgreSQL para optimizar el rendimiento del servidor.
+
+            - @api.autovacuum: 
+                    Decorador especial para automatizaciones del sistema. 
+                    Indica al framework que el método decorado debe ejecutarse de forma automática y periódica por el motor 
+                    interno de Odoo para realizar tareas rutinarias de limpieza (como eliminar adjuntos huérfanos, vaciar sesiones web caducadas o purgar registros temporales).
+
+            - @api.private: 
+                    Convierte el método en una función privada del sistema. 
+                    Bloquea de forma estricta que el método pueda ser invocado o llamado de forma remota desde fuera del servidor 
+                    a través de protocolos API o llamadas externas como RPC, protegiendo funciones críticas o sensibles de lógica interna.                                          '''
+
     @api.depends('state') #hace q cuando cambie STATE se debe recalcular este campo
     def _compute_is_done(self):
         for record in self: #self puede contener varios registros y por eso debe recorrerse
@@ -156,5 +199,3 @@ Many2many: - Muchos <--> Muchos (N:N)
             if task.deadline and task.deadline < fields.Date.today(): # 'si hay fecha límite y es menor que hoy, hay error'
                 #se lanzará un error si alguien intenta guardar una tarea con una fecha vencida
                 raise ValidationError('La fecha límite no puede ser anterior a hoy')
-
-
