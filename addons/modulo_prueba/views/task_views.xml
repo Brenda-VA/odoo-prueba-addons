@@ -6,6 +6,13 @@
         <field name='model'>modulo_prueba.task</field>
         <field name='arch' type='xml'>
             <form string='Tarea'>
+                <header>  <!-- botón creado para llamar al método de task.py que rellena la dscripción automaticamente 
+                    'name=': Llama a 'action_fill_description' (método público), el cual internamente llama a '_build_default_description' (método privado) y este devuelve el texto -->
+                    <button name="action_fill_description"  
+                            string="Rellenar descripción"
+                            type="object"
+                            class="oe_highlight"/> <!-- clase css de odoo pq empieza con 'oe_' -->
+                </header>
                 <sheet> <!-- '<sheet>' es un contenedor visual (componente) propio de Odoo, le da el aspecto de estar en una cajita  -->
                     <group>
                        <field name='name'/>
@@ -50,9 +57,11 @@ Cuando seleccionas tecnologías en una tarea:    Formulario de Tarea
                     </group>
 
                     <group>
-                        <field name='priority'/>
+                       <field name='priority'/>
                        <field name='state'/>
                        <field name='deadline'/>
+                       <field name="days_remaining" readonly="1"/>
+                       <field name="context_info" readonly="1"/>
                        <field name='user_id' readonly='1'/> <!-- 'readonly' es un atributo de Odoo XML Views, tmb se puede activar con True -->
                        <field name='is_done' readonly='1'/> 
                     </group>
@@ -74,6 +83,7 @@ Cuando seleccionas tecnologías en una tarea:    Formulario de Tarea
                 <field name='priority'/> 
                 <field name='state'/> 
                 <field name='deadline'/> 
+                <field name="days_remaining" readonly="1"/>
                 <field name='is_done' readonly='1'/>      
             </list> 
         </field> 
