@@ -3,3 +3,4 @@ access_modulo_prueba_student,modulo_prueba.student,model_modulo_prueba_student,b
 access_modulo_prueba_task,modulo_prueba.task,model_modulo_prueba_task,base.group_user,1,1,1,1
 access_modulo_prueba_sprint,modulo_prueba.sprint,model_modulo_prueba_sprint,base.group_user,1,1,1,1
 access_modulo_prueba_tecnologia,modulo_prueba.tecnologia,model_modulo_prueba_tecnologia,base.group_user,1,1,1,1
+access_modulo_prueba_youtube,modulo_prueba.youtube,model_modulo_prueba_youtube,base.group_user,1,1,1,1

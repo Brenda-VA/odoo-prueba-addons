@@ -25,7 +25,10 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': [
+        'base',
+        'account' 
+    ],
     # ejemplo de añadir dependencias a otros módulos
     # 'depends': [
     #       'base',
@@ -40,6 +43,7 @@ Long description of module's purpose
         'views/student_views.xml',
         'views/task_views.xml',
         'views/menus.xml',
+        'views/account_move_views.xml',
         #'views/views.xml',
         #'views/templates.xml',
         #falta añadir el csv actualizado

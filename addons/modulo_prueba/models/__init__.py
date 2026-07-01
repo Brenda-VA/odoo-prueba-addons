@@ -2,6 +2,8 @@ from . import students
 from . import task
 from . import sprint
 from . import tecnologia
+from . import account_move
+from . import youtube
 
 ''' addons/modulo_prueba/models/__init__.py
 los MODELOS son objetos de negocio como Clientes, proveedores, productos, etc
