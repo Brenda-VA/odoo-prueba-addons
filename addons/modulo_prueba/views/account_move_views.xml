@@ -1,0 +1,60 @@
+<!-- addons/modulo_prueba/views/account_move_views.xml -->
+<odoo>
+    <!-- Herencia de vista:
+         Creamos un registro ir.ui.view que NO reemplaza la vista original de facturas
+         Se extiende usando inherit_id + xpath                                                          -->
+    <record id="view_move_form" model="ir.ui.view">
+
+        <!-- 'ref=': Vista original de Odoo que queremos modificar
+             'account.view_move_form': Es del al módulo account -->
+        <field name="inherit_id" ref="account.view_move_form"/>
+
+        <!-- Modelo al que pertenece la vista heredada.
+             Como estamos modificando la vista de facturas, el modelo es 'account.move' -->
+        <field name="model">account.move</field>
+
+        <!-- arch contiene las instrucciones XML que Odoo aplicará sobre la vista padre. -->
+        <field name="arch" type="xml">
+
+            <!-- XPath: - Busca el nodo <header> dentro de la vista original
+                        - position="inside" significa: inserta mi contenido dentro del header -->
+            <xpath expr="//header" position="inside">
+
+                <!-- Botón de tipo object:
+                     name:  nombre del método de python que se va a ejecutar cuando presione,os el botón. Su nombre debe ser igual tanto en la vista (xml) como en ell modelo (.py)
+                     Al pulsarlo, Odoo ejecuta self.scm_create/scm_update/scm_delete... sobre la factura actual -->
+                <button string="SCM Create" name="scm_create" type="object" class="oe_highlight"/>
+                <button string="SCM Update" name="scm_update" type="object" class="oe_highlight"/>
+                <button string="SCM Delete" name="scm_delete" type="object" class="oe_highlight"/>
+                <button string="SCM Unlink" name="scm_unlink" type="object" class="oe_highlight"/>
+                <button string="SCM Link" name="scm_link" type="object" class="oe_highlight"/>
+                <button string="SCM Clear" name="scm_clear" type="object" class="oe_highlight"/>
+                <button string="SCM Set" name="scm_set" type="object" class="oe_highlight"/>
+            </xpath>
+
+            <!-- Busca la pestaña Other Info de la vista original -> name="other_info"
+                 position="after" significa: añade mi nueva pestaña justo después -->
+            <xpath expr="//page[@name='other_info']" position="after">
+
+                <!-- 'name=': Nueva pestaña añadida por tu módulo dentro del formulario de factura orginal de odoo -->
+                <page name="youtube_test_page" string="Youtube Test">
+
+                    <!-- 'name=': Nombre del campo que añadiste en account_move.py
+                         Como es One2many, Odoo muestra una lista de registros relacionados -->
+                    <field name="youtube_test_ids">
+
+                        <!-- Vista interna tipo lista para los registros Youtube Test.
+                             editable="bottom" permite añadir/editar líneas desde la propia tabla. -->
+                        <list editable="bottom">
+
+                            <!-- Campos del modelo modulo_prueba.youtube declarados en youtube.py
+                                 No son campos de account.move -->
+                            <field name="name"/>
+                            <field name="description"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
