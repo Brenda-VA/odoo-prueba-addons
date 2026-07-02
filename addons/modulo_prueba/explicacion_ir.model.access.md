@@ -1,6 +1,6 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_modulo_prueba_student,modulo_prueba.student,model_modulo_prueba_student,base.group_user,1,1,1,1
-access_modulo_prueba_task,modulo_prueba.task,model_modulo_prueba_task,base.group_user,1,1,1,1
+**id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink**
+**access_modulo_prueba_student,modulo_prueba.student,model_modulo_prueba_student,base.group_user,1,1,1,1**
+**access_modulo_prueba_task,modulo_prueba.task,model_modulo_prueba_task,base.group_user,1,1,1,1**
 
 #------ NINGUNA DE LAS FILAS DEBE TENER ESPACIOS ENTRE SUS ELEMENTOS ----------
 #con esto se les da permisos a los usuarios para que puedan usar determinados modelos o evitar q miren infromación o tareas q no les pertenecen o crear un grupo personalizado para tener un administrador de tareas

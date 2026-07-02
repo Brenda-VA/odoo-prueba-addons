@@ -90,9 +90,9 @@ Cuando seleccionas tecnologías en una tarea:    Formulario de Tarea
     </record> 
 
 <!-- vista de tipo KANBAN -->
-<!-- la convención para poner nombres a los campos es: modulo_prueba = módulo
-                                                       task = modelo
-                                                       form/list = tipo de vista                         -->
+<!-- la convención para poner nombres a los campos es: módulo = modulo_prueba 
+                                                       modelo = task 
+                                                       tipo de vista = form/list                       -->
     <record id='view_user_task_kanban' model='ir.ui.view'>
         <field name='name'>modulo_prueba.task.kanban</field> 
         <field name='model'>modulo_prueba.task</field> <!-- 'con model:...' se conecta la vista XML y usa _name = "modulo_prueba.task" de task.py  -->
@@ -100,8 +100,7 @@ Cuando seleccionas tecnologías en una tarea:    Formulario de Tarea
 
             <!-- kanban es un elemento de Odoo 
              default_group_by='': Agrupa las tarjetas según el campo q le pongamos, puede ser 'state', 'priority', etc
-             'o_kanban_small_column': clase CSS propia de Odoo hecha para columnas más pequeñas
-             -->
+             'o_kanban_small_column': clase CSS propia de Odoo hecha para columnas más pequeñas        -->
             <kanban default_group_by='state' class='o_kanban_small_column'>    
                 <!-- campos q vienen del modelo, deben ser declarados primero para luego ser usados en el template para q él pueda jalar infromación del modelo -->
                 <field name='name'/> 

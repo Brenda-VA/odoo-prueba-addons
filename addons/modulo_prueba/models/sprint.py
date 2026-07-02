@@ -9,7 +9,8 @@ class Sprint(models.Model):
     start_date = fields.Datetime(string = 'Fecha de inicio')
     end_date = fields.Datetime(string = 'Fecha de finalización')
 
-    """ CAMPO One2many: Relación inversa del Many2one       
+    """ CAMPO One2many: Relación inversa del Many2one    
+    NO PUEDE EXISTIR SÓLO, NECESITA UN Many2one DEL CUAL BUSCAR DATOS
     task_ids: Nombre del campo, por convención debe terminar en _ids
     Esto no crea una columna nueva en la tabla 'modulo_prueba_sprint', si no q busca tareas cuyo 'sprint_id' sea el sprint actual:
     Por ejemplo: 
@@ -24,7 +25,7 @@ class Sprint(models.Model):
 
                            
     SPRINT (one) --> TAREAS (many)                                                                 """
-    task_ids = fields.One2many( # q sea One2many significa q este campo contiene una colección de registros hijos, se muestran en fotma de tabla con 'add a line'
+    task_ids = fields.One2many( # q sea One2many significa q este campo contiene una colección de registros hijos, se muestran en forma de tabla con 'add a line'
         comodel_name='modulo_prueba.task', # apunta al modelo destino
         inverse_name='sprint_id', # como FK, apunta al campo 'Many2one' que está en 'task.py', debe ser el inverso
         string='Tareas'
