@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- addons/owl_course/views/hello_world_actions.xml -->
+<odoo>
+    <data>
+        <record id="action_hello_world" model="ir.actions.client">
+            <field name="name">Hello World OWL</field>
+            <field name="tag">owl_course.hello_world</field>
+        </record>
+
+        <menuitem id="menu_hello_world" name="Hello World OWL" 
+                  parent="menu_course_component" action="action_hello_world"/>
+
+    </data>
+</odoo>

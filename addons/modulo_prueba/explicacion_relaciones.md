@@ -25,7 +25,7 @@ Ese parámetro le dice a Odoo:
 
 # "No guardes nada en mi tabla. Cuando yo necesite mostrar las tareas, ve a la tabla de tareas (project_task), busca su columna física project_id (que es el Many2one de la otra tabla) y tráeme todas las filas donde ese ID coincida con el mío"
 
-1. _Si creas un One2many ➡️ SÍ es obligatorio el Many2one_ -> Un campo One2many no puede existir solo.
+1. **Si creas un One2many ➡️ SÍ es obligatorio el Many2one** -> Un campo One2many no puede existir solo.
    Como vimos en la explicación anterior, el One2many es un campo virtual que no crea columnas en su propia tabla; su única función es ir a buscar datos a otra tabla.
    Por lo tanto, necesitas obligatoriamente que en la otra tabla exista un campo Many2one físico que actúe como "ancla" para saber qué registros están relacionados.
    Si intentas declarar un One2many sin apuntar a un Many2one real en el modelo destino, Odoo dará un error de compilación al arrancar y no te dejará iniciar el módulo.
