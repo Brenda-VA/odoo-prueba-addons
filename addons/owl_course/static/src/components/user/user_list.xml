@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- addons/owl_course/static/src/components/user/user_list.xml -->
+<templates xml:space='preserve'>
+    <t t-name="owl_course.UserList">
+        <div class="user-list">
+            <h2>Lista de Usuarios</h2>
+            <!-- para renderizar los objetos del array 'users' usamos un 't-foreach' 
+             recorre todos los usuarios del array, las vistas se renderizan en user
+             t-key="": La key debe ser un valor del array q sea único para cada registro, por ejemplo, el email -->
+            <t t-foreach="users" t-as="user" t-key="user.email">
+                <!-- ahora se pone cada uno de los campos del array 'users' con user.nombreCampo  -->
+                <UserCard name="user.name" email="user.email" role="user.role"/>
+                
+            </t>
+        </div>
+    </t>
+</templates>
