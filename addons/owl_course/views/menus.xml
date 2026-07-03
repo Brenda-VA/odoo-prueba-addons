@@ -2,7 +2,13 @@
 <!-- addons/owl_course/views/menus.xml -->
 <odoo>
     <data>
-        <menuitem id="menu_course_root" name="OWL Course"/>
+        <!-- MENÚ GENERAL-->
+        <menuitem id="menu_course_root" name="OWL Course"/> <!-- Botón principal en la barra superior que muestra el texto 'OWL Course' -->
+
+        <!-- Se crea una sección al lado del Menú principal
+         name="": Texto que se ve en la barra superior
+         parent="": Este va a estar 'metido' dentro del q menú del q sea el id q coloquemos 
+         sequence="": Indica el orden                                                                                           -->
         <menuitem id="menu_course_component" name="Component" parent="menu_course_root" sequence="10"/>
     </data>
 </odoo>

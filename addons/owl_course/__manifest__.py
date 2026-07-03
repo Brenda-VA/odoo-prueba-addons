@@ -16,14 +16,14 @@ Long description of module's purpose
     'category': 'Uncategorized',
     'version': '0.1',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base'],
+    # Los componentes de odoo siempre dependen de base y web
+    'depends': ['base', 'web'],
 
-    # always loaded
+    # AQUÍ DEBEMOS DECLARAR TODOS LOS ARCHIVOS QUE VAMOS A UTILIZAR EN EL MÓDULO, YA SEA XML, JS, CSS, ETC...
     'data': [
         # 'security/ir.model.access.csv',
         'views/menus.xml',
-        'views/templates.xml',
+        'views/user_actions.xml',
         'views/hello_world_actions.xml'
     ],
     'assets':{ 
@@ -36,4 +36,3 @@ Long description of module's purpose
         'demo/demo.xml',
     ],
 }
-

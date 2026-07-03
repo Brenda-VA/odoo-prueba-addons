@@ -2,11 +2,17 @@
 <!-- addons/owl_course/views/hello_world_actions.xml -->
 <odoo>
     <data>
-        <record id="action_hello_world" model="ir.actions.client">
+        <!-- creamos una acción de cliente -->
+            <record id="action_hello_world" model="ir.actions.client"> <!-- id='': Id que le pongamos a la acción, model='': modelo (tabla) de las acciones de cliente -->
             <field name="name">Hello World OWL</field>
-            <field name="tag">owl_course.hello_world</field>
+            <field name="tag">owl_course.hello_world</field> <!-- tag: clave id que le dimos a 'registry.category("actions").add(' en el js -->
         </record>
 
+        <!-- id="": Nombre q le querramos poner
+             name="": Texto que va a mostrar en la interfaz
+             parent="menu_course_component": va a estar dentro del menú Hello World OWL declarado en menus.xml (línea 11 de menus.xml)
+             action="": Nombre (id) de la acción que se va a ejecutar cuando se pulse este botón (línea 6 ↑)
+             -->
         <menuitem id="menu_hello_world" name="Hello World OWL" 
                   parent="menu_course_component" action="action_hello_world"/>
 
