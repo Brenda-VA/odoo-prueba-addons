@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- addons/owl_course/views/user_actions.xml -->
+<odoo>
+    <data>
+        <record id="action_user_list" model="ir.actions.client">
+            <field name="name">Lista de Usuarios</field><!-- texto que se va a mostrar en la pantalla -->
+            <field name="tag">owl_course.user_list</field> <!-- aquí va el id que le pusimos al 'registry.category("actions")' de user_list.js  -->
+        </record>
+
+        <!-- action="": id de la acción de arriba -->
+        <menuitem id="menu_user_list" name=" Lista de Usuarios" 
+                  parent="menu_course_component" action="action_user_list" sequence="11"/>               
+
+    </data>
+</odoo>
